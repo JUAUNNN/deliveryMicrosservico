@@ -35,7 +35,7 @@ public class Delivery {
     private ContactPoint sender;
     private ContactPoint recipient;
 
-    private List<Item> intens = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
 
     public static Delivery draft() {
         Delivery delivery = new Delivery();
@@ -48,7 +48,37 @@ public class Delivery {
      return delivery;
     }
 
+    public UUID addItem(String name, int quantity) {
+        Item item = Item.brandNew(name, quantity);
+        items.add(item);
+        calculateTotalItems();
+        return item.getId();
+    }
+
+    public void removeItem(UUID itemId) {
+        items.removeIf(item -> item.getId().equals(itemId));
+        calculateTotalItems();
+    }
+
+    public void removeItems() {
+        items.clear();
+        calculateTotalItems();
+    }
+
+    public void changeItemQuantity(UUID itemId, int quantity) {
+        Item item = getItems().stream().filter(i -> i.getId().equals(itemId))
+                .findFirst().orElseThrow();
+
+        item.setQuantity(quantity);
+        calculateTotalItems();
+    }
+
     public List<Item> getIntens() {
-        return Collections.unmodifiableList(this.intens);
+        return Collections.unmodifiableList(this.items);
+    }
+
+    private void calculateTotalItems() {
+        int totalItems = getItems().stream().mapToInt(Item::getQuantity).sum();
+        setTotalItens(totalItems);
     }
 }
