@@ -1,8 +1,10 @@
 package com.delivery.delivery_tracking.domain.model;
 
+import com.delivery.delivery_tracking.domain.exception.DomainException;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +57,13 @@ public class Delivery {
         return item.getId();
     }
 
+    public void changeItemQuantity(UUID itemId, int quantity) {
+        Item item = getItems().stream().filter(i -> i.getId().equals(itemId))
+                .findFirst().orElseThrow();
+
+        item.setQuantity(quantity);
+        calculateTotalItems();
+    }
     public void removeItem(UUID itemId) {
         items.removeIf(item -> item.getId().equals(itemId));
         calculateTotalItems();
@@ -65,13 +74,34 @@ public class Delivery {
         calculateTotalItems();
     }
 
-    public void changeItemQuantity(UUID itemId, int quantity) {
-        Item item = getItems().stream().filter(i -> i.getId().equals(itemId))
-                .findFirst().orElseThrow();
+    public void editPreparationDetails(PreparationDetails details) {
+        verify
 
-        item.setQuantity(quantity);
-        calculateTotalItems();
+        setSender(details.getSender());
+        setRecipient(details.getRecipient());
+        setDistanceFee(details.getDistanceFee());
+        setCourierPayout(details.getCourierPayout());
+
+        setExpectedDeliveryAt(OffsetDateTime.now().plus(details.getExpectedDeliveryTime()));
+        setTotalCost(this.getDistanceFee().add(this.getCourierPayout()));
     }
+
+   public void place() {
+
+        this.setStatus(DeliveryStatus.WAITING_FOR_COURIER);
+        this.setPlacedAt(OffsetDateTime.now());
+   }
+
+   public void pickUp() {
+        this.setCourierId(courierId);
+        this.setStatus(DeliveryStatus.IN_TRANSIT);
+        this.setAssignedAt(OffsetDateTime.now());
+   }
+
+   public void markAsDelivered() {
+        this.setStatus(DeliveryStatus.DELIVERY);
+        this.setFulfilledAt(OffsetDateTime.now());
+   }
 
     public List<Item> getIntens() {
         return Collections.unmodifiableList(this.items);
@@ -80,5 +110,38 @@ public class Delivery {
     private void calculateTotalItems() {
         int totalItems = getItems().stream().mapToInt(Item::getQuantity).sum();
         setTotalItens(totalItems);
+    }
+
+    private void verifyIfCanBePlaced() {
+        if (!isFilled()) {
+            throw new DomainException();
+        }
+        if (!getStatus().equals(DeliveryStatus.DRAFT)) {
+            throw  new DomainException();
+        }
+    }
+
+    private  void verifyIfCanBeEdited() {
+        if(!getStatus().equals(DeliveryStatus.DRAFT)) {
+            throw new DomainException();
+        }
+    }
+
+    private boolean isFilled() {
+        return this.getSender() != null
+                && this.getRecipient() != null
+                && this.getTotalCost() != null;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class PreparationDetails {
+        private ContactPoint sender;
+        private ContactPoint recipient;
+        private BigDecimal distanceFee;
+        private BigDecimal courierPayout;
+        private Duration expectedDeliveryTime;
+
     }
 }
