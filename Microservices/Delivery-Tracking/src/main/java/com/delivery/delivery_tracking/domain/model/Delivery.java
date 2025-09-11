@@ -11,14 +11,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Setter(AccessLevel.PRIVATE)
 @Getter
 public class Delivery {
-
     @EqualsAndHashCode.Include
     private UUID id;
+
     private UUID courierId;
 
     private DeliveryStatus status;
@@ -32,7 +33,7 @@ public class Delivery {
     private BigDecimal courierPayout;
     private BigDecimal totalCost;
 
-    private Integer totalItens;
+    private Integer totalItems;
 
     private ContactPoint sender;
     private ContactPoint recipient;
@@ -41,13 +42,13 @@ public class Delivery {
 
     public static Delivery draft() {
         Delivery delivery = new Delivery();
-        delivery.setId( UUID.randomUUID());
-        delivery.setStatus(DeliveryStatus.DRAFT);
-        delivery.setTotalItens(0);
+        delivery.setId(UUID.randomUUID());
+        delivery.setStatus( DeliveryStatus.DRAFT);
+        delivery.setTotalItems(0);
         delivery.setTotalCost(BigDecimal.ZERO);
         delivery.setCourierPayout(BigDecimal.ZERO);
         delivery.setDistanceFee(BigDecimal.ZERO);
-     return delivery;
+        return delivery;
     }
 
     public UUID addItem(String name, int quantity) {
@@ -57,15 +58,16 @@ public class Delivery {
         return item.getId();
     }
 
+    public void removeItem(UUID itemId) {
+        items.removeIf(item -> item.getId().equals(itemId));
+        calculateTotalItems();
+    }
+
     public void changeItemQuantity(UUID itemId, int quantity) {
         Item item = getItems().stream().filter(i -> i.getId().equals(itemId))
                 .findFirst().orElseThrow();
 
         item.setQuantity(quantity);
-        calculateTotalItems();
-    }
-    public void removeItem(UUID itemId) {
-        items.removeIf(item -> item.getId().equals(itemId));
         calculateTotalItems();
     }
 
@@ -75,7 +77,7 @@ public class Delivery {
     }
 
     public void editPreparationDetails(PreparationDetails details) {
-        verify
+        verifyIfCanBeEdited();
 
         setSender(details.getSender());
         setRecipient(details.getRecipient());
@@ -86,30 +88,30 @@ public class Delivery {
         setTotalCost(this.getDistanceFee().add(this.getCourierPayout()));
     }
 
-   public void place() {
-
+    public void place() {
+        verifyIfCanBePlaced();
         this.setStatus(DeliveryStatus.WAITING_FOR_COURIER);
         this.setPlacedAt(OffsetDateTime.now());
-   }
+    }
 
-   public void pickUp() {
+    public void pickUp(UUID courierId) {
         this.setCourierId(courierId);
         this.setStatus(DeliveryStatus.IN_TRANSIT);
         this.setAssignedAt(OffsetDateTime.now());
-   }
+    }
 
-   public void markAsDelivered() {
+    public void markAsDelivered() {
         this.setStatus(DeliveryStatus.DELIVERY);
         this.setFulfilledAt(OffsetDateTime.now());
-   }
+    }
 
-    public List<Item> getIntens() {
+    public List<Item> getItems() {
         return Collections.unmodifiableList(this.items);
     }
 
     private void calculateTotalItems() {
         int totalItems = getItems().stream().mapToInt(Item::getQuantity).sum();
-        setTotalItens(totalItems);
+        setTotalItems(totalItems);
     }
 
     private void verifyIfCanBePlaced() {
@@ -117,12 +119,12 @@ public class Delivery {
             throw new DomainException();
         }
         if (!getStatus().equals(DeliveryStatus.DRAFT)) {
-            throw  new DomainException();
+            throw new DomainException();
         }
     }
 
-    private  void verifyIfCanBeEdited() {
-        if(!getStatus().equals(DeliveryStatus.DRAFT)) {
+    private void verifyIfCanBeEdited() {
+        if (!getStatus().equals(DeliveryStatus.DRAFT)) {
             throw new DomainException();
         }
     }
@@ -142,6 +144,5 @@ public class Delivery {
         private BigDecimal distanceFee;
         private BigDecimal courierPayout;
         private Duration expectedDeliveryTime;
-
     }
 }
