@@ -1,4 +1,4 @@
-package com.delivery.delivery_tracking.domain.model;
+package com.delivery.delivery.tracking.domain.model;
 
 import lombok.*;
 
@@ -12,6 +12,7 @@ public class Item {
     @EqualsAndHashCode.Include
     private UUID id;
     private String name;
+
     @Setter(AccessLevel.PACKAGE)
     private Integer quantity;
 
@@ -20,8 +21,6 @@ public class Item {
         item.setId(UUID.randomUUID());
         item.setName(name);
         item.setQuantity(quantity);
-
         return item;
     }
-
 }

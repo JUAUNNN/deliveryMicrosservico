@@ -1,6 +1,6 @@
-package com.delivery.delivery_tracking.domain.model;
+package com.delivery.delivery.tracking.domain.model;
 
-import com.delivery.delivery_tracking.domain.exception.DomainException;
+import com.delivery.delivery.tracking.domain.exception.DomainException;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -11,12 +11,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Setter(AccessLevel.PRIVATE)
 @Getter
 public class Delivery {
+
     @EqualsAndHashCode.Include
     private UUID id;
 

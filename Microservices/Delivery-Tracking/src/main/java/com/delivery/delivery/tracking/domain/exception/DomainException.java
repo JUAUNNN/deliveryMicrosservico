@@ -1,4 +1,4 @@
-package com.delivery.delivery_tracking.domain.exception;
+package com.delivery.delivery.tracking.domain.exception;
 
 public class DomainException extends RuntimeException{
     public DomainException() {

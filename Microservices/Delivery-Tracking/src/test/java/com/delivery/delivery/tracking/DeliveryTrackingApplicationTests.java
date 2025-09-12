@@ -1,4 +1,4 @@
-package com.delivery.delivery_tracking;
+package com.delivery.delivery.tracking;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

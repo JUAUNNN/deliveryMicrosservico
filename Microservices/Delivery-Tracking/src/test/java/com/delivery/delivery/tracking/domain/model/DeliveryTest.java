@@ -1,6 +1,7 @@
-package com.delivery.delivery_tracking.domain.model;
+package com.delivery.delivery.tracking.domain.model;
 
-import com.delivery.delivery_tracking.domain.exception.DomainException;
+
+import com.delivery.delivery.tracking.domain.exception.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DeliveryTest {
+
     @Test
     public void shouldChangeToPlaced() {
         Delivery delivery = Delivery.draft();
@@ -24,7 +26,9 @@ class DeliveryTest {
     @Test
     public void shouldNotPlace() {
         Delivery delivery = Delivery.draft();
-        assertThrows(DomainException.class, delivery::place);
+        assertThrows(DomainException.class, () -> {
+            delivery.place();
+        });
 
         assertEquals(DeliveryStatus.DRAFT, delivery.getStatus());
         assertNull(delivery.getPlacedAt());

@@ -1,4 +1,4 @@
-package com.delivery.delivery_tracking;
+package com.delivery.delivery.tracking;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

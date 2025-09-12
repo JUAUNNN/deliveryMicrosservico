@@ -1,4 +1,4 @@
-package com.delivery.delivery_tracking.domain.model;
+package com.delivery.delivery.tracking.domain.model;
 
 public enum DeliveryStatus {
     DRAFT,
