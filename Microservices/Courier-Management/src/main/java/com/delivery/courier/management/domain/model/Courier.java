@@ -2,6 +2,10 @@ package com.delivery.courier.management.domain.model;
 
 import lombok.*;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -21,5 +25,22 @@ public class Courier {
 
     private Integer fulfilledDeliveriesQuantity;
 
+    private Integer pendingDeliveriesQuantity;
 
+    private OffsetDateTime lastFulfilledDelivery;
+
+    private List<AssingedDelivery> pendingDeliveries = new ArrayList<>();
+
+    public List<AssingedDelivery> getPendingDeliveries() {
+        return Collections.unmodifiableList(this.pendingDeliveries);
+    }
+
+    public static Courier brandNew(String name, String phone) {
+       Courier courier = new Courier();
+       courier.setName(name);
+       courier.setPhone(phone);
+       courier.setFulfilledDeliveriesQuantity(0);
+       courier.setPendingDeliveriesQuantity(0);
+       return courier;
+    }
 }
