@@ -1,3 +1,4 @@
+
 spring:
   application:
     name: delivery-tracking
@@ -9,3 +10,4 @@ spring:
     url: jdbc:postgresql://localhost:5432/deliverydb
     username: postgres
     password: postgres
+  
