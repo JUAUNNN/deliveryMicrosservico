@@ -23,6 +23,6 @@ class DeliveryStatusTest {
 
     @Test
         void  Delivery_canNotChangeToDelivery() {
-        assertFalse(DeliveryStatus.DELIVERY.canChangeTo(DeliveryStatus.IN_TRANSIT));
+        assertFalse(DeliveryStatus.DELIVERED.canChangeTo(DeliveryStatus.IN_TRANSIT));
     }
 }
